@@ -1,56 +1,118 @@
 # Automated Loyverse Sales ETL Pipeline
 
-A Python-based ETL pipeline built for a small food business to automate sales data collection and preserve historical records beyond Loyverse's one-month data retention period.
+## Why it was built
 
-> **Note:** This is a portfolio overview of a real client project. The production source code and business data are kept private.
+This pipeline was built to:
 
-## Why It Was Made
+* Maintain **unlimited historical sales data** beyond Loyverse's limited retention period.
+* **Remove repetitive manual data entry** by automatically collecting and storing sales records.
+* Create an organized data foundation that provides **more opportunities for analysis** by combining sales, weather, and calendar data.
 
-Loyverse only retains a limited amount of historical sales data, while the business needed a way to keep its records over time.
-
-The pipeline was created to automate the collection of sales data and store it in a persistent PostgreSQL database instead of relying on manual spreadsheet work.
-
-## How It Works
+## What it does
 
 ```text
-Loyverse
-   ↓
-Extract
-Python + Playwright / REST API
-   ↓
-Transform
-Clean and organize sales data
-   ↓
-Load
-Neon PostgreSQL
-   ↓
-Daily Sales Summary
+Loyverse POS
+     │
+     ▼
+  Extract
+     │
+     ▼
+ Transform
+     │
+     ├── Sales data
+     ├── Weather data
+     └── Calendar data
+     │
+     ▼
+ PostgreSQL
+     │
+     ├── sales_data
+     │
+     └── daily_sales_summary
 ```
 
-The pipeline runs automatically through **GitHub Actions** and stores the collected data in PostgreSQL for long-term use.
+The pipeline automatically collects sales data, processes it, enriches it with weather and calendar information, and stores it in PostgreSQL for long-term use.
 
 ## Database Design
 
-The sales data is stored in a centralized table containing information such as:
+```sql
+sales_data
+──────────
+id
+sales_date
+item_name
+category
+items_sold
+gross_sales
+items_refunded
+refunds
+discounts
+net_sales
+cost_of_goods
+gross_profit
+margin
+created_at
 
-* Sales date
-* Item and category
-* Items sold
-* Gross sales
-* Discounts
-* Net sales
-* Cost of goods
-* Gross profit
-* Margin
 
-Daily summaries are also generated from the stored sales data.
+daily_sales_summary
+───────────────────
+sales_date PK
+gross_profit
+cost_of_goods
+net_sales
+precipitation_sum_mm
+precipitation_hours
+precipitation_probability_max_percent
+weather_code
+weather_code_description
+maximum_temperature_c
+holiday
+month_name
+days_of_week
+updated_at
+```
+
+`sales_data` stores item-level sales records, while `daily_sales_summary` stores one persistent record per sales date.
+
+The tables are conceptually related through `sales_date`; no foreign key is enforced between them.
+
+## Automation
+
+```text
+GitHub Actions
+      │
+      │ scheduled run
+      ▼
+   Python ETL
+      │
+      ▼
+ PostgreSQL
+```
+
+The pipeline runs automatically every night.
+
+If no sales are available:
+
+```text
+No sales rows
+     │
+     ├── No itemized records inserted
+     │
+     └── Daily summary still recorded
+```
+
+Daily summaries use an `ON CONFLICT` upsert on `sales_date`, allowing existing dates to be updated when the pipeline runs again.
 
 ## Tech Stack
 
-**Python · Playwright · REST APIs · PostgreSQL · Neon · Git · GitHub Actions**
+```text
+Python
+Playwright
+PostgreSQL
+Neon
+REST APIs
+Git
+GitHub Actions
+```
 
-## Architecture
-
-![Pipeline Architecture](architecture.png)
-
-The production implementation remains private because it contains client-specific code and data. This repository only presents the project's architecture and database design.
+Client sales data and credentials are kept private and are not included in this repository.
