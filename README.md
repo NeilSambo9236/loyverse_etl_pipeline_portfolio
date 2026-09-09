@@ -1,6 +1,6 @@
 # Automated Loyverse Sales ETL Pipeline
 
-> **Confidentiality & Usage Notice:** This project was developed for a private client. The production implementation, client data, credentials, configuration, and other sensitive information are intentionally excluded from this repository. The public materials are provided solely to demonstrate the project's architecture, functionality, and technical concepts. No permission is granted to reproduce, modify, or deploy the production implementation for other purposes.
+> **Confidentiality & Usage Notice:** This project was developed for a private client. The production implementation, client data, credentials, configuration, and other sensitive information are intentionally excluded from this repository. The public materials are provided solely to demonstrate the project's architecture, functionality, and technical concepts and are not intended for reproduction, modification, redistribution, or deployment as the production system.
 
 ## Why it was built
 
