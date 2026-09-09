@@ -1,5 +1,7 @@
 # Automated Loyverse Sales ETL Pipeline
 
+> **Confidentiality Notice:** This project was developed for a private client. Production source code, sales data, credentials, and other client-specific information are intentionally excluded from this repository. This repository is provided for portfolio and technical demonstration purposes only.
+
 ## Why it was built
 
 This pipeline was built to:
@@ -115,4 +117,4 @@ Git
 GitHub Actions
 ```
 
-Client sales data and credentials are kept private and are not included in this repository.
+Production client data, credentials, and client-specific implementation details are kept private and are not included in this repository.
