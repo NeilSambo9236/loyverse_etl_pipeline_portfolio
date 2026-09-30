@@ -1,14 +1,14 @@
 # Automated Loyverse Sales ETL Pipeline
 
-> **Confidentiality & Usage Notice:** This project was developed for a private client. The production implementation, client data, credentials, configuration, and other sensitive information are intentionally excluded from this repository. The public materials are provided solely to demonstrate the project's architecture, functionality, and technical concepts and are not intended for reproduction, modification, redistribution, or deployment as the production system.
+> **Confidentiality & Usage Notice:** This project was developed for a private client. The production implementation and source code are intentionally not published due to client confidentiality and project ownership considerations. The client has not authorized the release of the production code, data, credentials, or configuration. This repository therefore provides **project evidence, architecture, database design, and technical documentation** to demonstrate the work without exposing the underlying implementation.
 
 ## Why it was built
 
 This pipeline was built to:
 
-* Maintain **unlimited historical sales data** beyond Loyverse's limited retention period.
-* **Remove repetitive manual data entry** by automatically collecting and storing sales records through the **Loyverse API**.
-* Create an organized data foundation that provides **more opportunities for analysis** by combining sales, weather, and calendar data.
+* Preserve historical sales data beyond Loyverse's limited retention period.
+* Automate the collection and processing of sales records, reducing repetitive manual data entry.
+* Combine sales data with weather and calendar information to provide a foundation for analysis.
 
 ## What it does
 
@@ -21,26 +21,29 @@ Loyverse API
      ▼
   Extract
      │
+     ├── Sales
+     ├── Refunds
+     └── Reference data
+     │
      ▼
  Transform
      │
-     ├── Sales data
-     ├── Weather data
-     └── Calendar data
+     ├── Sales metrics
+     ├── Weather
+     └── Calendar
      │
      ▼
  PostgreSQL
      │
      ├── sales_data
-     │
      └── daily_sales_summary
 ```
 
-The pipeline automatically retrieves sales data from the **Loyverse API**, processes it, enriches it with weather and calendar information, and stores it in PostgreSQL for long-term use.
+The pipeline retrieves paginated sales and refund data from the **Loyverse API**, transforms the records, enriches daily summaries with weather and calendar data, and stores the results in PostgreSQL.
 
 ## Database Design
 
-```sql
+```text
 sales_data
 ──────────
 id
@@ -77,16 +80,17 @@ days_of_week
 updated_at
 ```
 
-`sales_data` stores item-level sales records, while `daily_sales_summary` stores one persistent record per sales date.
-
-The tables are conceptually related through `sales_date`; no foreign key is enforced between them.
+`sales_data` contains item-level records, while `daily_sales_summary` contains one record per sales date. The tables are related conceptually through `sales_date`.
 
 ## Automation
 
 ```text
 GitHub Actions
       │
-      │ scheduled run
+      │ 12:00 PM PHT
+      ▼
+ Previous Day's Data
+      │
       ▼
    Python ETL
       │
@@ -94,30 +98,29 @@ GitHub Actions
  PostgreSQL
 ```
 
-The pipeline runs automatically every night.
+The pipeline runs automatically every day at **12:00 PM Philippine time** and processes the **previous Philippine calendar day's data**.
 
-If no sales are available:
+The schedule provides a buffer for data availability and helps reduce the impact of GitHub Actions scheduling delays or temporary technical issues. The runner uses the `Asia/Manila` timezone to keep date processing aligned with the business.
 
-```text
-No sales rows
-     │
-     ├── No itemized records inserted
-     │
-     └── Daily summary still recorded
-```
+The workflow can also be triggered manually for testing or reruns.
 
-Daily summaries use an `ON CONFLICT` upsert on `sales_date`, allowing existing dates to be updated when the pipeline runs again.
+If no sales are available, no itemized records are inserted, but the daily summary is still recorded. Daily summaries use an `ON CONFLICT` upsert on `sales_date` so existing dates can be updated when rerun.
 
 ## Tech Stack
 
 ```text
 Python
+Pandas
 Loyverse API
-REST APIs
+WeatherAPI
 PostgreSQL
 Neon
 Git
 GitHub Actions
 ```
 
-Production client data, credentials, and client-specific implementation details are kept private and are not included in this repository.
+### Repository Contents
+
+The repository contains **evidence of the project, architecture, database design, and technical documentation** rather than the production source code.
+
+Production client data, credentials, configuration, and implementation details remain private and are not included in this repository.
