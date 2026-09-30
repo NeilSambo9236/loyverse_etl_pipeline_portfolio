@@ -7,13 +7,16 @@
 This pipeline was built to:
 
 * Maintain **unlimited historical sales data** beyond Loyverse's limited retention period.
-* **Remove repetitive manual data entry** by automatically collecting and storing sales records.
+* **Remove repetitive manual data entry** by automatically collecting and storing sales records through the **Loyverse API**.
 * Create an organized data foundation that provides **more opportunities for analysis** by combining sales, weather, and calendar data.
 
 ## What it does
 
 ```text
 Loyverse POS
+     │
+     ▼
+Loyverse API
      │
      ▼
   Extract
@@ -33,7 +36,7 @@ Loyverse POS
      └── daily_sales_summary
 ```
 
-The pipeline automatically collects sales data, processes it, enriches it with weather and calendar information, and stores it in PostgreSQL for long-term use.
+The pipeline automatically retrieves sales data from the **Loyverse API**, processes it, enriches it with weather and calendar information, and stores it in PostgreSQL for long-term use.
 
 ## Database Design
 
@@ -109,10 +112,10 @@ Daily summaries use an `ON CONFLICT` upsert on `sales_date`, allowing existing d
 
 ```text
 Python
-Playwright
+Loyverse API
+REST APIs
 PostgreSQL
 Neon
-REST APIs
 Git
 GitHub Actions
 ```
