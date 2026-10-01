@@ -87,7 +87,7 @@ updated_at
 ```text
 GitHub Actions
       │
-      │ 12:00 PM PHT
+      │ 9:00 AM PHT
       ▼
  Previous Day's Data
       │
@@ -98,7 +98,7 @@ GitHub Actions
  PostgreSQL
 ```
 
-The pipeline runs automatically every day at **12:00 PM Philippine time** and processes the **previous Philippine calendar day's data**.
+The pipeline runs automatically every day at **9:00 AM Philippine time** and processes the **previous Philippine calendar day's data**.
 
 The schedule provides a buffer for data availability and helps reduce the impact of GitHub Actions scheduling delays or temporary technical issues. The runner uses the `Asia/Manila` timezone to keep date processing aligned with the business.
 
